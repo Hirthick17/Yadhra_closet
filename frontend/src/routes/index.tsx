@@ -42,16 +42,17 @@ function Home() {
   return (
     <SiteShell>
       {/* HERO */}
-      <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden bg-white">
-        {/* The Foundational Layer: The clear, unblended image */}
+      <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden bg-deep-blue">
+        {/* The Image Layer */}
         <img 
           src={heroImg}
-          className="absolute inset-0 w-full h-full object-cover object-top"
+          className="absolute inset-0 w-full h-full object-cover object-top animate-ken-burns"
           alt="Yadhra Closet Summer Collection"
         />
-
-        {/* The Blending Layer: Creates the initial white wash and executes the glow reveal */}
-        <div className="absolute inset-0 bg-white/80 mix-blend-screen animate-glow-reveal pointer-events-none z-10"></div>
+        {/* Dark scrim so text is always readable after reveal */}
+        <div className="absolute inset-0 bg-deep-blue/30 z-[5]" />
+        {/* Glow Reveal: starts as white wash, bursts then fades away completely */}
+        <div className="absolute inset-0 animate-glow-reveal pointer-events-none z-[8]" />
 
         {/* Hero Content with Animation */}
         <HeroSection hero={hero} />

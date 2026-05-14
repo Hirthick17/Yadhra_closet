@@ -14,7 +14,8 @@
 
 import { getAccessToken } from '../lib/api';
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+const _envApiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+const API_BASE = _envApiUrl.endsWith('/api') ? _envApiUrl : `${_envApiUrl.replace(/\/+$/, '')}/api`;
 
 export interface UploadResult {
   url:      string;  // Full HTTPS Cloudinary URL (secure_url)

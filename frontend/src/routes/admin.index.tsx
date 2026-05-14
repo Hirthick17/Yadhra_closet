@@ -4,7 +4,7 @@ import { cms, useCms, CMS_DEFAULT, type CmsContent } from "@/lib/cms";
 import {
   LayoutDashboard, Home, HelpCircle, Package, Megaphone, Navigation as NavIcon,
   Link2, LogOut, Eye, Plus, Trash2, RotateCcw, Save, ExternalLink,
-  Upload, Pencil, X, ImageIcon, Loader2,
+  Upload, Pencil, X, ImageIcon, Loader2, Menu
 } from "lucide-react";
 import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, type Product } from "@/hooks/useProducts";
 import { useAllOrders, useUpdateOrderStatus } from "@/hooks/useOrders";
@@ -24,6 +24,7 @@ function AdminPortal() {
   const sessionChecked = useCms((s) => s.sessionChecked);
   const [pane, setPane] = useState<Pane>("dashboard");
   const [toast, setToast] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (sessionChecked && !isAdmin) navigate({ to: "/admin/login" });
@@ -65,32 +66,38 @@ function AdminPortal() {
   return (
     <div className="min-h-screen flex flex-col bg-secondary-bg">
       {/* Top bar */}
-      <header className="sticky top-0 z-50 bg-deep-blue h-14 flex items-center justify-between px-6 text-white">
-        <div className="flex items-center gap-3">
-          <span className="w-8 h-8 rounded-lg bg-white/15 font-serif text-sm font-bold flex items-center justify-center">YC</span>
-          <span className="font-serif text-[18px]">Yadhra <em className="italic font-light opacity-70">Closet</em></span>
-          <span className="text-[10px] font-bold uppercase tracking-[0.12em] bg-white/10 px-2.5 py-1 rounded-full opacity-70">CMS Admin</span>
+      <header className="sticky top-0 z-50 bg-deep-blue h-14 flex items-center justify-between px-3 md:px-6 text-white shadow-md">
+        <div className="flex items-center gap-2">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden w-10 h-10 flex items-center justify-center rounded hover:bg-white/10 touch-manipulation">
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+          <span className="hidden md:flex w-8 h-8 rounded-lg bg-white/15 font-serif text-sm font-bold items-center justify-center">YC</span>
+          <span className="font-serif text-[15px] md:text-[18px]">Yadhra <em className="italic font-light opacity-70 hidden md:inline">Closet</em></span>
+          <span className="hidden lg:inline text-[10px] font-bold uppercase tracking-[0.12em] bg-white/10 px-2.5 py-1 rounded-full opacity-70">CMS Admin</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Link
             to="/"
             target="_blank"
-            className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-white/10 hover:bg-white/20 border border-white/15 rounded-full px-3.5 py-1.5"
+            className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-white/10 hover:bg-white/20 border border-white/15 rounded-full px-2.5 py-1.5"
           >
-            <Eye className="w-3 h-3" /> Preview Site <ExternalLink className="w-3 h-3" />
+            <Eye className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Preview</span>
           </Link>
           <button
             onClick={() => { cms.logout(); navigate({ to: "/" }); }}
-            className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-white text-deep-blue rounded-full px-3.5 py-1.5"
+            className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-white text-deep-blue rounded-full px-2.5 py-1.5 touch-manipulation"
           >
-            <LogOut className="w-3 h-3" /> Logout
+            <LogOut className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Logout</span>
           </button>
         </div>
       </header>
 
       <div className="flex-1 flex">
+        {menuOpen && (
+          <div className="fixed inset-0 bg-deep-blue/40 z-30 md:hidden backdrop-blur-sm" onClick={() => setMenuOpen(false)} />
+        )}
         {/* Sidebar */}
-        <aside className="w-[220px] flex-shrink-0 bg-white border-r border-border-grey py-5 overflow-y-auto">
+        <aside className={`${menuOpen ? 'fixed inset-y-0 left-0 mt-14 z-40 w-[280px] shadow-2xl' : 'hidden'} md:static md:block md:w-[240px] lg:w-[260px] md:mt-0 flex-shrink-0 bg-white border-r border-border-grey py-5 overflow-y-auto`}>
           {Object.entries(grouped).map(([section, list]) => (
             <div key={section} className="px-3.5 mb-1">
               <p className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-text-muted px-2.5 py-2">{section}</p>
@@ -100,7 +107,7 @@ function AdminPortal() {
                 return (
                   <button
                     key={it.id}
-                    onClick={() => setPane(it.id)}
+                    onClick={() => { setPane(it.id); setMenuOpen(false); }}
                     className={`relative w-full text-left flex items-center gap-2.5 px-2.5 py-2 rounded-[9px] text-[13px] font-medium transition-colors ${
                       active ? "bg-deep-blue/[0.06] text-deep-blue font-bold" : "text-accent-blue hover:bg-secondary-bg"
                     }`}
@@ -123,7 +130,7 @@ function AdminPortal() {
         </aside>
 
         {/* Main */}
-        <main className="flex-1 overflow-y-auto p-7 md:p-9">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden w-full p-4 md:p-6 lg:p-8">
           {pane === "dashboard" && <DashboardPane go={setPane} />}
           {pane === "orders" && <OrdersPane />}
           {pane === "homepage" && <HomepagePane onChange={() => showToast("Saved")} />}
@@ -168,15 +175,15 @@ function Card({ title, children }: { title?: string; children: React.ReactNode }
 
 function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-accent-blue">{label}</span>
+    <label className="flex flex-col gap-2">
+      <span className="text-[12px] md:text-[11px] font-bold uppercase tracking-[0.1em] text-accent-blue">{label}</span>
       {children}
-      {hint && <span className="text-[11px] text-text-muted">{hint}</span>}
+      {hint && <span className="text-[12px] md:text-[11px] text-text-muted">{hint}</span>}
     </label>
   );
 }
 
-const inputCls = "px-3 py-2.5 border-[1.5px] border-border-grey rounded-[9px] bg-secondary-bg focus:border-deep-blue focus:bg-white outline-none text-[13px] text-accent-blue w-full font-sans";
+const inputCls = "px-4 py-3 md:py-2.5 border-2 border-border-grey rounded-[9px] bg-secondary-bg focus:border-deep-blue focus:bg-white outline-none text-[15px] md:text-[13px] text-accent-blue w-full font-sans touch-manipulation";
 
 function Toggle({ on, onClick, label, sub }: { on: boolean; onClick: () => void; label: string; sub?: string }) {
   return (
@@ -214,7 +221,7 @@ function DashboardPane({ go }: { go: (p: Pane) => void }) {
   return (
     <div>
       <PageHeader title="Welcome back 👋" sub="Manage your store's content from one place." />
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
         {stats.map((s) => (
           <div key={s.l} className="bg-white border border-border-grey rounded-xl p-5 shadow-sm">
             <div className="text-2xl mb-2">{s.icon}</div>
@@ -417,7 +424,8 @@ function ProductsPane({ onChange }: { onChange: () => void }) {
   const [editing, setEditing] = useState<EditProduct | null>(null);
   const [showNew, setShowNew] = useState(false);
 
-  const remove = (id: string) => {
+  const remove = (id: string, name: string) => {
+    if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
     deleteProduct(id, { onSuccess: onChange });
   };
 
@@ -434,72 +442,69 @@ function ProductsPane({ onChange }: { onChange: () => void }) {
 
       <Card>
         {isLoading ? (
-          <div className="space-y-3">
-            {[1,2,3].map(i => <div key={i} className="animate-pulse h-16 bg-secondary-bg rounded-lg" />)}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1,2,3,4,5,6].map(i => <div key={i} className="animate-pulse h-48 bg-secondary-bg rounded-lg" />)}
           </div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-12 text-text-muted text-[13px]">No products yet. Click Add Product to get started.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-[13px]">
-              <thead>
-                <tr className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-text-muted border-b border-border-grey">
-                  <th className="text-left py-3 px-3">Product</th>
-                  <th className="text-left py-3 px-3">Category</th>
-                  <th className="text-left py-3 px-3">Price</th>
-                  <th className="text-left py-3 px-3">Stock</th>
-                  <th className="text-left py-3 px-3">Badge</th>
-                  <th className="text-right py-3 px-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((p) => (
-                  <tr key={p._id} className="border-b border-border-grey hover:bg-secondary-bg">
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-3">
-                        {p.images?.[0] || p.image ? (
-                          <img src={p.images?.[0] || p.image} alt="" className="w-11 h-14 rounded-md object-cover bg-secondary-bg" />
-                        ) : (
-                          <div className="w-11 h-14 rounded-md bg-secondary-bg flex items-center justify-center">
-                            <ImageIcon className="w-4 h-4 text-text-muted" />
-                          </div>
-                        )}
-                        <div>
-                          <p className="font-bold text-deep-blue">{p.name}</p>
-                          <p className="text-[11px] text-text-muted">{p.slug}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-3 text-[12px]">{p.categoryLabel}</td>
-                    <td className="py-3 px-3 font-mono font-bold text-deep-blue">
-                      ₹{p.price?.toLocaleString("en-IN")}
-                      {p.oldPrice && <span className="font-mono ml-1.5 text-[11px] text-text-muted line-through">₹{p.oldPrice}</span>}
-                    </td>
-                    <td className="py-3 px-3">
-                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${p.stock === 0 ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-700"}`}>
-                        {p.stock === 0 ? "Out" : p.stock}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3">
-                      {p.badge && (
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${p.badge === "new" ? "bg-deep-blue/10 text-deep-blue" : "bg-sale/10 text-sale"}`}>
-                          {p.badge.toUpperCase()}
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 px-3 text-right">
-                      <button onClick={() => setEditing(p)} className="inline-flex items-center gap-1 text-[11px] font-bold text-deep-blue hover:underline mr-3">
-                        <Pencil className="w-3 h-3" /> Edit
-                      </button>
-                      <button onClick={() => remove(p._id)} className="text-[11px] font-bold text-sale hover:underline">
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {products.length === 0 && (
-                  <tr><td colSpan={6} className="text-center py-12 text-text-muted text-[13px]">No products yet. Click Add Product to get started.</td></tr>
-                )}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {products.map((p) => (
+              <div key={p._id} className="bg-white border border-border-grey rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+                {/* Image */}
+                <div className="relative h-40 bg-secondary-bg">
+                  {p.images?.[0] || p.image ? (
+                    <img src={p.images?.[0] || p.image} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ImageIcon className="w-10 h-10 text-text-muted" />
+                    </div>
+                  )}
+                  {/* Badge */}
+                  {p.badge && (
+                    <span className={`absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${p.badge === "new" ? "bg-deep-blue text-white" : "bg-sale text-white"}`}>
+                      {p.badge.toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                
+                {/* Content */}
+                <div className="p-3">
+                  <p className="font-bold text-deep-blue text-[14px] truncate">{p.name}</p>
+                  <p className="text-[11px] text-text-muted truncate">{p.slug}</p>
+                  
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-[13px] font-bold text-deep-blue">₹{p.price?.toLocaleString("en-IN")}</span>
+                    {p.oldPrice && (
+                      <span className="text-[11px] text-text-muted line-through">₹{p.oldPrice}</span>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center justify-between mt-2">
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${p.stock === 0 ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-700"}`}>
+                      {p.stock === 0 ? "Out of Stock" : `${p.stock} in stock`}
+                    </span>
+                    <span className="text-[11px] text-text-muted">{p.categoryLabel}</span>
+                  </div>
+                  
+                  {/* Action Buttons - Always Visible */}
+                  <div className="flex gap-2 mt-3 pt-3 border-t border-border-grey">
+                    <button 
+                      onClick={() => setEditing(p)} 
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border-2 border-deep-blue text-deep-blue text-[12px] font-bold hover:bg-deep-blue/5 touch-manipulation"
+                    >
+                      <Pencil className="w-3.5 h-3.5" /> Edit
+                    </button>
+                    <button 
+                      onClick={() => remove(p._id, p.name)} 
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border-2 border-sale text-sale text-[12px] font-bold hover:bg-sale/5 touch-manipulation"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </Card>
@@ -566,9 +571,9 @@ function ProductModal({ initial, onClose, onSave }: {
     subtitle:       initial?.subtitle      ?? "",
     category:       (initial?.category as typeof CATS[number]) ?? "everyday",
     categoryLabel:  initial?.categoryLabel ?? "Everyday Wear",
-    price:          initial?.price !== undefined ? String(initial.price) : "",
-    oldPrice:       initial?.oldPrice !== undefined ? String(initial.oldPrice) : "",
-    stock:          initial?.stock !== undefined ? String(initial.stock) : "0",
+    price:          initial?.price != null ? String(initial.price) : "",
+    oldPrice:       initial?.oldPrice != null ? String(initial.oldPrice) : "",
+    stock:          initial?.stock != null ? String(initial.stock) : "0",
     rating:         initial?.rating        ?? 4.5,
     ratingCount:    initial?.ratingCount   ?? 0,
     badge:          (initial?.badge as "new"|"sale"|"") ?? "",
@@ -636,48 +641,74 @@ function ProductModal({ initial, onClose, onSave }: {
 
   const isBusy = creating || updating || uploading;
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = originalStyle; };
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-[100] bg-deep-blue/40 backdrop-blur flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[100] bg-deep-blue/40 backdrop-blur flex items-stretch md:items-center justify-center">
+      <div className="bg-white w-full h-full md:h-auto md:max-h-[92vh] md:rounded-2xl max-w-2xl flex flex-col shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-border-grey flex items-center justify-between sticky top-0 bg-white z-10">
-          <h2 className="font-serif text-2xl text-deep-blue">{isEdit ? "Edit product" : "Add product"}</h2>
-          <button onClick={onClose} className="w-8 h-8 rounded-full border border-border-grey text-text-muted hover:border-sale hover:text-sale flex items-center justify-center">
-            <X className="w-4 h-4" />
+        <div className="p-4 md:p-6 border-b border-border-grey flex items-center justify-between flex-shrink-0 bg-white">
+          <h2 className="font-serif text-xl md:text-2xl text-deep-blue">{isEdit ? "Edit product" : "Add product"}</h2>
+          <button onClick={onClose} className="w-10 h-10 rounded-full border-2 border-border-grey text-text-muted hover:border-sale hover:text-sale flex items-center justify-center touch-manipulation">
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 space-y-5">
+        {/* Content - scrollable */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 space-y-5">
           {/* Images section */}
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-accent-blue mb-3">Product Images</p>
+            <p className="text-[12px] font-bold uppercase tracking-[0.1em] text-accent-blue mb-3">Product Images</p>
             <div className="flex flex-wrap gap-3 mb-3">
               {form.images.map((url, i) => (
-                <div key={i} className="relative w-24 h-28 rounded-xl overflow-hidden bg-secondary-bg border border-border-grey group">
+                <div key={i} className="relative w-28 h-32 rounded-xl overflow-hidden bg-secondary-bg border-2 border-border-grey group flex-shrink-0" style={i === 0 ? {borderColor:'var(--deep-blue)'} : {}}>
                   <img src={url} alt="" className="w-full h-full object-cover" />
+                  {/* MAIN badge - always visible */}
                   {i === 0 && (
-                    <span className="absolute top-1 left-1 bg-deep-blue text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">MAIN</span>
+                    <span className="absolute top-1 left-1 bg-deep-blue text-white text-[8px] font-bold px-2 py-0.5 rounded-full z-10">MAIN</span>
                   )}
-                  <button
-                    onClick={() => removeImage(i)}
-                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white/90 text-sale opacity-0 group-hover:opacity-100 transition flex items-center justify-center"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
+                  {/* Action overlay - always visible on mobile */}
+                  <div className="absolute inset-x-0 bottom-0 bg-black/70 flex items-center justify-around py-2 z-10">
+                    {i !== 0 && (
+                      <button
+                        type="button"
+                        title="Set as main"
+                        onClick={() => set({ images: [url, ...form.images.filter((_, j) => j !== i)] })}
+                        className="text-white text-[10px] font-bold uppercase flex flex-col items-center gap-0.5 touch-manipulation p-1"
+                      >
+                        <span className="text-[16px]">★</span>
+                        <span>Main</span>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      title="Remove image"
+                      onClick={() => removeImage(i)}
+                      className="text-red-300 text-[10px] font-bold uppercase flex flex-col items-center gap-0.5 touch-manipulation p-1"
+                    >
+                      <X className="w-4 h-4" />
+                      <span>Remove</span>
+                    </button>
+                  </div>
                 </div>
               ))}
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="w-24 h-28 rounded-xl border-2 border-dashed border-border-grey bg-secondary-bg flex flex-col items-center justify-center gap-1.5 text-text-muted hover:border-deep-blue hover:text-deep-blue transition disabled:opacity-50"
+                className="w-28 h-32 rounded-xl border-2 border-dashed border-border-grey bg-secondary-bg flex flex-col items-center justify-center gap-2 text-text-muted hover:border-deep-blue hover:text-deep-blue transition disabled:opacity-50 touch-manipulation"
               >
-                {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Upload className="w-5 h-5" />}
-                <span className="text-[10px] font-semibold">{uploading ? "Uploading..." : "Upload"}</span>
+                {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Upload className="w-6 h-6" />}
+                <span className="text-[11px] font-semibold">{uploading ? "Uploading..." : "Upload"}</span>
               </button>
             </div>
             <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleFileChange} />
-            {uploadError && <p className="text-[12px] text-red-500 mt-1">{uploadError}</p>}
-            <p className="text-[11px] text-text-muted">JPG, PNG, or WebP · Max 5 MB · First image is shown as main product photo</p>
+            {uploadError && <p className="text-[13px] text-red-500 mt-2 font-medium">{uploadError}</p>}
+            <p className="text-[12px] text-text-muted mt-2">JPG, PNG, or WebP • Max 5 MB • First image is main photo</p>
           </div>
 
           {/* Basic info */}
@@ -834,17 +865,17 @@ function ProductModal({ initial, onClose, onSave }: {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-5 border-t border-border-grey flex justify-end gap-2 sticky bottom-0 bg-white">
-          <button onClick={onClose} className="px-5 py-2.5 rounded-[9px] border border-border-grey text-[12px] font-bold uppercase tracking-wider hover:border-deep-blue">
+        {/* Footer - sticky on mobile */}
+        <div className="p-4 md:p-5 border-t border-border-grey flex justify-between gap-3 flex-shrink-0 bg-white sticky bottom-0">
+          <button onClick={onClose} className="flex-1 md:flex-none px-5 py-3 md:py-2.5 rounded-[9px] border-2 border-border-grey text-[14px] md:text-[12px] font-bold uppercase tracking-wider hover:border-deep-blue touch-manipulation">
             Cancel
           </button>
           <button
             onClick={submit}
             disabled={isBusy}
-            className="px-5 py-2.5 rounded-[9px] bg-deep-blue text-white text-[12px] font-bold uppercase tracking-wider hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+            className="flex-1 md:flex-none px-5 py-3 md:py-2.5 rounded-[9px] bg-deep-blue text-white text-[14px] md:text-[12px] font-bold uppercase tracking-wider hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 touch-manipulation"
           >
-            {isBusy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+            {isBusy && <Loader2 className="w-4 h-4 md:w-3.5 h-3.5 animate-spin" />}
             {isEdit ? "Save changes" : "Create product"}
           </button>
         </div>
@@ -977,8 +1008,8 @@ function OrdersPane() {
     <div className="max-w-5xl mx-auto animation-fade-in pb-20">
       <PageHeader title="Orders Management" sub="Track and manage customer WhatsApp orders" />
 
-      <div className="bg-white rounded-2xl border border-border-grey overflow-hidden shadow-sm">
-        <table className="w-full text-left border-collapse">
+      <div className="bg-white rounded-2xl border border-border-grey overflow-x-auto shadow-sm">
+        <table className="w-full text-left border-collapse min-w-[700px]">
           <thead>
             <tr className="border-b border-border-grey bg-secondary-bg text-[11px] uppercase tracking-wider text-text-muted">
               <th className="px-5 py-4 font-semibold">Order ID & Time</th>
