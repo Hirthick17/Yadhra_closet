@@ -1,15 +1,6 @@
 {
-  "outputDirectory": "dist",
   "framework": "vite",
   "buildCommand": "npx vite build",
   "installCommand": "npm install",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/200.html" }
-  ],
-  "fallback": [
-    {
-      "source": "/(.*)",
-      "destination": "/200.html"
-    }
-  ]
+  "output": "server"
 }
