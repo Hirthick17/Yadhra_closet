@@ -1,9 +1,9 @@
 {
   "outputDirectory": "dist/client",
-  "framework": null,
+  "framework": "vite",
   "buildCommand": "bun run build",
   "installCommand": "bun install",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
