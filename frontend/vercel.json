@@ -1,6 +1,13 @@
 {
-  "framework": "vite",
   "buildCommand": "npx vite build",
   "installCommand": "npm install",
-  "output": "server"
+  "framework": null,
+  "functions": {
+    "api/index.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "dest": "/$1" }
+  ]
 }
