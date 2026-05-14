@@ -2,12 +2,9 @@
   "buildCommand": "npx vite build",
   "installCommand": "npm install",
   "framework": null,
-  "functions": {
-    "api/index.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
+  "outputDirectory": "dist/client",
   "rewrites": [
-    { "source": "/(.*)", "dest": "/$1" }
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "status": 200 }
   ]
 }

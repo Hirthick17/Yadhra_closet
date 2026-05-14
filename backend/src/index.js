@@ -32,7 +32,8 @@ app.use(helmet({
       scriptSrc:  ["'self'"],
       styleSrc:   ["'self'", "'unsafe-inline'"],
       imgSrc:     ["'self'", "data:", "https://res.cloudinary.com", "https://*.cloudinary.com"],
-      connectSrc: ["'self'", process.env.CLIENT_URL, "https://*.cloudinary.com"].filter(Boolean),
+      // api.cloudinary.com is needed for direct browser → Cloudinary signed uploads.
+      connectSrc: ["'self'", process.env.CLIENT_URL, "https://*.cloudinary.com", "https://api.cloudinary.com"].filter(Boolean),
       frameSrc:   ["'none'"],
       objectSrc:  ["'none'"],
     },
