@@ -1,0 +1,57 @@
+# Dependency directories
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+.output/
+.tanstack/
+.nitro/
+
+# Environment files (keep examples)
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+
+# Claude AI specific
+.claude/
+
+# Editor directories and files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Wrangler / Cloudflare
+.wrangler/
+.dev.vars
+
+# Package lock files (we use bun)
+package-lock.json
+yarn.lock
+
+# Frontend specific (keep)
+# frontend/.env
+# frontend/.env.production.example
+# frontend/bun.lockb
+# frontend/package.json
+# frontend/src/
+# frontend/index.html
+# frontend/vite.config.ts
+# frontend/tsconfig.json
+# frontend/components.json
+
+# Backend specific (keep)
+# backend/package.json
+# backend/src/
+# backend/render.yaml

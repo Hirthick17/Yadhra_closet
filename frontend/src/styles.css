@@ -1,0 +1,208 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-pill: 100px;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-deep-blue: var(--deep-blue);
+  --color-accent-blue: var(--accent-blue);
+  --color-secondary-bg: var(--secondary-bg);
+  --color-border-grey: var(--border-grey);
+  --color-text-muted: var(--text-muted);
+  --color-gold: var(--gold);
+  --color-success: var(--success);
+  --color-sale: var(--sale);
+  /* ── Yadhra Type System ────────────────────────────────────────────────
+     Instrument Serif (italic only) → editorial headlines  H1 / H2
+     DM Sans (400–700)              → all UI, body, nav
+     DM Mono (400–500)              → prices, codes, referral numbers
+  ──────────────────────────────────────────────────────────────────── */
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-sans:  "DM Sans", system-ui, sans-serif;
+  --font-mono:  "DM Mono", "Courier New", monospace;
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  --radius: 0.625rem;
+  --deep-blue: oklch(0.25 0.13 269);
+  --accent-blue: oklch(0.34 0.025 245);
+  --secondary-bg: oklch(0.972 0.005 245);
+  --border-grey: oklch(0.92 0.006 245);
+  --text-muted: oklch(0.55 0.02 245);
+  --gold: oklch(0.74 0.09 80);
+  --success: oklch(0.62 0.16 150);
+  --sale: oklch(0.63 0.19 25);
+
+  --background: oklch(1 0 0);
+  --foreground: var(--accent-blue);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--accent-blue);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--accent-blue);
+  --primary: var(--deep-blue);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: var(--secondary-bg);
+  --secondary-foreground: var(--accent-blue);
+  --muted: var(--secondary-bg);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--secondary-bg);
+  --accent-foreground: var(--deep-blue);
+  --destructive: var(--sale);
+  --destructive-foreground: oklch(1 0 0);
+  --border: var(--border-grey);
+  --input: var(--border-grey);
+  --ring: var(--deep-blue);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html, body { font-family: var(--font-sans); }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ── Display & Headlines: Instrument Serif (Italic) ─────────────────
+     Instrument Serif ships italic-only. We:
+       1. Force font-style: italic (no browser synthesis needed — the font IS italic)
+       2. Reset font-weight to normal — Instrument Serif has no bold variant;
+          browser-synthesised bold would distort the letterforms.
+     Result: every H1 / H2 renders in the true italic cut, giving the
+     Kinfolk-magazine / editorial high-fashion feel. ───────────────── */
+  h1, h2, .font-serif {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: normal;
+  }
+
+  /* ── Data & Pricing: DM Mono ─────────────────────────────────────────
+     Applied to price tags, product codes, referral numbers.
+     font-variant-numeric: tabular-nums  → OpenType tnum feature (CSS)
+     font-feature-settings: "tnum"       → explicit OT feature (broader support)
+     Together they ensure every digit is the same width so ₹ amounts
+     align perfectly in product grids and order tables. ────────────── */
+  .font-mono {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+  .ticker-track {
+    animation: ticker 22s linear infinite;
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .pop-in { animation: popIn 0.55s var(--ease-spring); }
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .nav-underline {
+    position: relative;
+  }
+  .nav-underline::after {
+    content: ""; position: absolute; left: 0; bottom: -6px; height: 1.5px;
+    width: 0; background: var(--deep-blue); transition: width 0.3s ease;
+  }
+  .nav-underline:hover::after, .nav-underline[data-active="true"]::after { width: 100%; }
+  .animate-ken-burns {
+    animation: ken-burns 10s ease-in-out infinite alternate;
+  }
+  @keyframes ken-burns {
+    0% {
+      transform: scale(1) translate(0, 0);
+    }
+    100% {
+      transform: scale(1.15) translate(-2%, -2%);
+    }
+  }
+  .animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+  .animate-stutter-1 {
+    animation: stutter-1 6s ease-in-out infinite;
+  }
+  @keyframes stutter-1 {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    40% { opacity: 1; }
+    60% { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  .animate-stutter-2 {
+    animation: stutter-2 8s ease-in-out infinite;
+  }
+  @keyframes stutter-2 {
+    0% { opacity: 0; }
+    40% { opacity: 0; }
+    60% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .animate-glow-reveal {
+    animation: glow-reveal-dissolve 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  .animate-fade-up {
+    animation: fadeUp 0.8s ease-out forwards;
+  }
+  @keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes glow-reveal-dissolve {
+    0%, 60% {
+      opacity: 0.85;
+      filter: brightness(1) blur(0px);
+    }
+    70% {
+      opacity: 1;
+      filter: brightness(1.5) blur(8px) drop-shadow(0 0 20px rgba(255,255,255,0.9));
+    }
+    100% {
+      opacity: 0;
+      filter: brightness(1) blur(0px);
+      visibility: hidden;
+    }
+  }
+}

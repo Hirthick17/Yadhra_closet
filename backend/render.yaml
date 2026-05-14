@@ -1,0 +1,37 @@
+# render.yaml — Render.com deployment config
+# Place this in the BACKEND root directory.
+# Deploy: Push to GitHub → Render auto-deploys on every push to main.
+# Reference: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: yadhra-closet-api
+    env: node
+    plan: free                          # Upgrade to Starter ($7/mo) for always-on
+    region: singapore                   # Closest to Chennai (Asia South)
+    buildCommand: npm install
+    startCommand: node src/index.js     # No nodemon in production
+    healthCheckPath: /api/health        # Render pings this to confirm startup
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000                    # Render assigns 10000 by default
+      - key: MONGODB_URI
+        sync: false                     # Set in Render dashboard — never commit
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: REFRESH_TOKEN_SECRET
+        sync: false
+      - key: REFRESH_TOKEN_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_URL
+        sync: false                     # Set to https://your-app.vercel.app
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
