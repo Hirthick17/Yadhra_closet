@@ -1,9 +1,15 @@
 {
-  "outputDirectory": "dist/client",
+  "outputDirectory": "dist",
   "framework": "vite",
-  "buildCommand": "bun run build",
-  "installCommand": "bun install",
+  "buildCommand": "npx vite build",
+  "installCommand": "npm install",
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/200.html" }
+  ],
+  "fallback": [
+    {
+      "source": "/(.*)",
+      "destination": "/200.html"
+    }
   ]
 }
