@@ -15,11 +15,32 @@ exports.placeOrder = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Order must have at least one item' });
     }
 
-    // Snapshot prices from DB to prevent client-side price tampering
+    // Snapshot prices from DB to prevent client-side price tampering.
+    // Supports both MongoDB ObjectId and slug-based productId (cart items from local store).
     const enrichedItems = await Promise.all(
       items.map(async (item) => {
-        const product = await Product.findOne({ _id: item.productId, isActive: true });
-        if (!product) throw Object.assign(new Error(`Product not found: ${item.productId}`), { statusCode: 404 });
+        let product = null;
+        const mongoose = require('mongoose');
+
+        // Try ObjectId lookup first; fall back to slug if id is not a valid ObjectId
+        if (mongoose.Types.ObjectId.isValid(item.productId)) {
+          product = await Product.findOne({ _id: item.productId, isActive: true });
+        }
+        // Fallback: look up by slug field
+        if (!product) {
+          product = await Product.findOne({ slug: item.productId, isActive: true });
+        }
+        // Last resort: match by name (handles edge cases)
+        if (!product && item.name) {
+          product = await Product.findOne({ name: item.name, isActive: true });
+        }
+
+        if (!product) {
+          throw Object.assign(
+            new Error(`Product not found: ${item.productId}`),
+            { statusCode: 404 }
+          );
+        }
         return {
           product: product._id,
           name:     product.name,        // Snapshot — name at time of order

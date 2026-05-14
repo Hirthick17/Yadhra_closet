@@ -44,7 +44,8 @@ app.use(helmet({
 }));
 
 // ── 2. CORS ─────────────────────────────────────────────────────────────────
-// In prod: CLIENT_URL must be the Vercel app URL e.g. https://yadhra.vercel.app
+// CLIENT_URL = Vercel frontend URL (set in Render dashboard env vars)
+// e.g. https://yadhra-closet.vercel.app
 const ALLOWED_ORIGINS = [
   process.env.CLIENT_URL,
   'http://localhost:5173',
@@ -58,6 +59,10 @@ app.use(cors({
     if (!origin) return callback(null, true);          // Postman / curl
     if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
     if (!isProd) return callback(null, true);          // Dev: allow unknown ports
+    // Allow any *.vercel.app subdomain (covers preview deployments + prod)
+    if (/\.vercel\.app$/.test(origin)) return callback(null, true);
+    // Allow any *.onrender.com subdomain (internal service calls)
+    if (/\.onrender\.com$/.test(origin)) return callback(null, true);
     callback(new Error(`CORS blocked: ${origin}`));
   },
   credentials:    true,
@@ -156,6 +161,22 @@ app.get('/api/health', (req, res) => {
 
 // ── 8a. Root endpoint ────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
+  res.json({
+    name: 'Yadhra Closet API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/api/health',
+      products: '/api/products',
+      orders: '/api/orders',
+      auth: '/api/auth',
+      upload: '/api/upload',
+      customers: '/api/customers',
+    },
+  });
+});
+
+app.get('/api', (req, res) => {
   res.json({
     name: 'Yadhra Closet API',
     version: '1.0.0',
