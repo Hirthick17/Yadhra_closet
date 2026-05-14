@@ -153,6 +153,23 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// ── 8a. Root endpoint ────────────────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Yadhra Closet API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/api/health',
+      products: '/api/products',
+      orders: '/api/orders',
+      auth: '/api/auth',
+      upload: '/api/upload',
+      customers: '/api/customers',
+    },
+  });
+});
+
 // ── 9. 404 catch-all ─────────────────────────────────────────────────────────
 app.use((req, res) =>
   res.status(404).json({ success: false, message: `Route not found: ${req.method} ${req.originalUrl}` })
