@@ -2,7 +2,9 @@
 // Single API client — the ONLY place that talks to the backend.
 // Adds auth header, handles auto-refresh on 401, parses JSON, throws on error.
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+const _envApiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+// Make sure API_BASE always ends with /api (in case the user only provided the domain in Vercel settings)
+const API_BASE = _envApiUrl.endsWith('/api') ? _envApiUrl : `${_envApiUrl.replace(/\/+$/, '')}/api`;
 
 // ── In-memory token (never localStorage — prevents XSS theft) ─────────────
 let _accessToken: string | null = null;
