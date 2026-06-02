@@ -67,7 +67,7 @@ const ShopByCategory = ({ CATEGORIES }: ShopByCategoryProps) => {
             to="/catalog"
             search={{ cat: c.id }}
             // We apply the animation class only if isVisible is true, and stagger the delay by multiplying the index by 150 milliseconds.
-            className={`group relative overflow-hidden rounded-3xl min-h-[300px] md:min-h-[450px] shadow-sm hover:shadow-xl transition-all duration-500 ${
+            className={`group relative overflow-hidden rounded-2xl min-h-[180px] md:min-h-[260px] shadow-sm hover:shadow-xl transition-all duration-500 ${
               isVisible ? 'opacity-0 animate-fade-up' : 'opacity-0'
             }`}
             style={{ 
@@ -88,14 +88,14 @@ const ShopByCategory = ({ CATEGORIES }: ShopByCategoryProps) => {
             <div className="absolute inset-0 bg-gradient-to-t from-deep-blue/80 via-deep-blue/20 to-transparent transition-opacity duration-500 group-hover:opacity-90" />
             
             {c.badge && (
-              <span className="absolute top-6 left-6 px-4 py-1.5 rounded-full bg-white/95 text-[11px] font-bold uppercase tracking-wider text-deep-blue shadow-sm">
+              <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-white/95 text-[10px] font-bold uppercase tracking-wider text-deep-blue shadow-sm">
                 {c.badge}
               </span>
             )}
             
-            <div className="absolute bottom-8 left-8 text-white transform transition-transform duration-500 group-hover:-translate-y-2">
-              <h3 className="font-serif text-3xl md:text-4xl">{c.name}</h3>
-              <p className="text-[13px] md:text-[14px] opacity-90 mt-2 tracking-wide">{c.count} designs</p>
+            <div className="absolute bottom-5 left-5 text-white transform transition-transform duration-500 group-hover:-translate-y-1">
+              <h3 className="font-serif text-2xl md:text-3xl">{c.name}</h3>
+              <p className="text-[12px] md:text-[13px] opacity-90 mt-1 tracking-wide">{c.count} designs</p>
             </div>
           </Link>
         ))}

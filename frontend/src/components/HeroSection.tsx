@@ -39,7 +39,7 @@ const HeroSection = ({ hero }: HeroProps) => {
           absolute top-1/2 -translate-y-1/2 flex flex-col 
           transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)]
           ${moveToLeft 
-            ? 'left-[5%] md:left-[8%] lg:left-[10%] translate-x-0 w-[90%] md:w-auto text-left border border-deep-blue/20 bg-white/30 backdrop-blur-md p-8 md:p-12 rounded-3xl' 
+            ? 'left-[5%] md:left-[8%] lg:left-[10%] translate-x-0 w-[90%] md:max-w-[500px] text-left border border-white/20 bg-white/45 backdrop-blur-md p-6 md:p-10 rounded-2xl shadow-lg' 
             : 'left-1/2 -translate-x-1/2 w-full max-w-2xl text-center border-transparent bg-transparent p-0'
           }
         `}

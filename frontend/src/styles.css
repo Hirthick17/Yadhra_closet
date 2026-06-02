@@ -212,4 +212,23 @@
       filter: brightness(1) blur(0px);
     }
   }
+
+  @supports (animation-timeline: view()) {
+    .reveal-on-scroll {
+      animation: reveal-fade-in linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 30%;
+    }
+    @keyframes reveal-fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+  }
 }
+

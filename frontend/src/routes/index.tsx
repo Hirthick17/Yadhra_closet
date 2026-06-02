@@ -68,25 +68,33 @@ function Home() {
 
       {/* NEW ARRIVALS / HOT */}
       {sections.newArrivals && (
-        <NewArrivalsSection sections={sections} newArrivals={newArrivals} cartStore={cartStore} />
+        <div className="reveal-on-scroll">
+          <NewArrivalsSection sections={sections} newArrivals={newArrivals} cartStore={cartStore} />
+        </div>
       )}
 
       {/* HIGHLY RATED — DARK */}
       {sections.highlyRated && (
-        <HighlyRatedSection sections={sections} highlyRated={highlyRated} />
+        <div className="reveal-on-scroll">
+          <HighlyRatedSection sections={sections} highlyRated={highlyRated} />
+        </div>
       )}
 
       {/* WHY YADHRA — T-04: brand-differentiation section */}
-      <WhyYadhra />
+      <div className="reveal-on-scroll">
+        <WhyYadhra />
+      </div>
 
       {/* REVIEWS / SOCIAL PROOF */}
       {sections.reviews && (
-        <ReviewsSection sections={sections} festiveCollection={festiveCollection} reviews={reviews} />
+        <div className="reveal-on-scroll">
+          <ReviewsSection sections={sections} festiveCollection={festiveCollection} reviews={reviews} />
+        </div>
       )}
 
       {/* BRAND STORY — DARK */}
       {sections.brandStory && (
-      <section className="bg-deep-blue text-white">
+      <section className="bg-deep-blue text-white reveal-on-scroll">
         <div className="max-w-[1400px] mx-auto px-5 md:px-10 py-20 grid lg:grid-cols-[1fr_1.2fr] gap-12 items-center">
           <div className="relative">
             <div className="aspect-[3/4] rounded-[20px] overflow-hidden">
