@@ -2,7 +2,8 @@
 
 ## Project Overview
 
-Yadhra Closet- E-Commerce Platform is a **custom-built e-commerce platform** designed exclusively for Yadhra Closet, a contemporary clothing brand. This project represents a complete redesign and development of a modern, scalable platform to streamline online retail operations and enhance customer experience.
+Yadhra Closet is a **custom-built e-commerce platform** designed exclusively for Yadhra Closet, a contemporary clothing brand. This project represents a complete redesign and development of a modern, scalable platform to streamline online retail operations and enhance customer experience.
+
 
 ---
 
@@ -125,7 +126,9 @@ This separation allows independent scaling and maintenance of each layer.
 
 ## Key Features
 
-✅ **Product Browsing & Search**  
+✅ **Product Browsing & Search** - Intuitive catalog with advanced filtering  
+✅ **User Authentication** - Secure registration and login  
+
 ✅ **Shopping Cart** - Persistent cart with real-time updates  
 ✅ **Order Management** - Complete order lifecycle tracking  
 ✅ **Admin Dashboard** - Comprehensive management tools  
@@ -194,6 +197,7 @@ This hybrid approach combines the convenience of self-service e-commerce with th
 For inquiries about this custom development or to discuss similar projects:
 
 **Yadhra Closet**  
+
 E-Commerce Platform Team
 
 ---

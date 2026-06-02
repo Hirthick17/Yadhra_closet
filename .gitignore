@@ -3,6 +3,12 @@ node_modules/
 frontend/node_modules/
 backend/node_modules/
 
+# User requested exclusions
+.env.example
+backend/.env.example
+CICD_SETUP.md
+
+
 # Build outputs
 dist/
 dist-ssr/

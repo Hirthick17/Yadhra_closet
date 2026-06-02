@@ -19,10 +19,12 @@ const productSchema = new mongoose.Schema({
   description:  { type: String, required: true },
 
   // Category slug — matches frontend Product type
+  // No enum restriction — categories are managed dynamically via the admin panel
   category: {
     type: String,
     required: true,
-    enum: ['everyday', 'festive', 'floral', 'minimal'],
+    trim: true,
+    lowercase: true,
   },
   categoryLabel: { type: String }, // Display label, e.g. "Everyday Wear"
 
@@ -48,5 +50,7 @@ const productSchema = new mongoose.Schema({
 productSchema.index({ name: 'text', description: 'text' });
 // Fast category filter
 productSchema.index({ category: 1, isActive: 1 });
+// Fast default sort (createdAt DESC) — avoids collection scan on listing queries
+productSchema.index({ createdAt: -1, isActive: 1 });
 
 module.exports = mongoose.model('Product', productSchema);

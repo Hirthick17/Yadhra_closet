@@ -5,6 +5,8 @@ const { protect, adminOnly } = require('../middleware/auth');
 const { validateProduct } = require('../middleware/validate');
 
 // ── PUBLIC ──────────────────────────────────────────────────────────────────
+router.get('/categories', ctrl.getCategories); // GET /api/products/categories — distinct list
+router.get('/debug/cache-stats', protect, adminOnly, ctrl.getCacheStats); // Moved before /:id to prevent shadowing
 router.get('/',    ctrl.getProducts);  // GET /api/products?category=festive&search=blue
 router.get('/:id', ctrl.getProduct);   // GET /api/products/:id
 
@@ -15,3 +17,4 @@ router.put('/:id',    protect, adminOnly, validateProduct, ctrl.updateProduct);
 router.delete('/:id', protect, adminOnly, ctrl.deleteProduct);
 
 module.exports = router;
+

@@ -4,9 +4,9 @@ import { cms, useCms, CMS_DEFAULT, type CmsContent } from "@/lib/cms";
 import {
   LayoutDashboard, Home, HelpCircle, Package, Megaphone, Navigation as NavIcon,
   Link2, LogOut, Eye, Plus, Trash2, RotateCcw, Save, ExternalLink,
-  Upload, Pencil, X, ImageIcon, Loader2, Menu
+  Upload, Pencil, X, ImageIcon, Loader2, Menu, Tag
 } from "lucide-react";
-import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, type Product } from "@/hooks/useProducts";
+import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, type Product, useCategories } from "@/hooks/useProducts";
 import { useAllOrders, useUpdateOrderStatus } from "@/hooks/useOrders";
 import { useImageUpload } from "@/hooks/useUpload";
 import { useAuth } from "@/context/AuthContext";
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/admin/")({
   head: () => ({ meta: [{ title: "CMS — Yadhra Closet" }] }),
 });
 
-type Pane = "dashboard" | "orders" | "homepage" | "faq" | "products" | "ticker" | "navigation" | "footer";
+type Pane = "dashboard" | "orders" | "homepage" | "faq" | "products" | "categories" | "ticker" | "navigation" | "footer";
 
 function AdminPortal() {
   const navigate = useNavigate();
@@ -54,6 +54,7 @@ function AdminPortal() {
     { id: "homepage", label: "Homepage", icon: Home, section: "Page Content" },
     { id: "faq", label: "FAQ Page", icon: HelpCircle, section: "Page Content" },
     { id: "products", label: "Products", icon: Package, section: "Catalog" },
+    { id: "categories", label: "Categories", icon: Tag, section: "Catalog" },
     { id: "ticker", label: "Announcement Bar", icon: Megaphone, section: "Global" },
     { id: "navigation", label: "Navigation", icon: NavIcon, section: "Global" },
     { id: "footer", label: "Footer", icon: Link2, section: "Global" },
@@ -136,6 +137,7 @@ function AdminPortal() {
           {pane === "homepage" && <HomepagePane onChange={() => showToast("Saved")} />}
           {pane === "faq" && <FaqPane onChange={() => showToast("Saved")} />}
           {pane === "products" && <ProductsPane onChange={() => showToast("Saved")} />}
+          {pane === "categories" && <CategoriesPane />}
           {pane === "ticker" && <TickerPane onChange={() => showToast("Saved")} />}
           {pane === "navigation" && <NavPane onChange={() => showToast("Saved")} />}
           {pane === "footer" && <FooterPane onChange={() => showToast("Saved")} />}
@@ -409,10 +411,105 @@ function FaqPane({ onChange }: { onChange: () => void }) {
   );
 }
 
+/* ----- Categories Pane ----- */
+function CategoriesPane() {
+  const { data, isLoading, refetch } = useCategories();
+  const categories = data?.data ?? [];
+  const [newSlug, setNewSlug] = useState("");
+  const [newLabel, setNewLabel] = useState("");
+  const [info, setInfo] = useState("");
+
+  const handleAdd = () => {
+    const slug = newSlug.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const label = newLabel.trim();
+    if (!slug || !label) { setInfo("Both slug and label are required."); return; }
+    setInfo(`✓ Category "${label}" (${slug}) is ready. When you add a product with this category slug, it will appear in the filter tabs automatically.`);
+    setNewSlug(""); setNewLabel("");
+    refetch();
+  };
+
+  return (
+    <div>
+      <PageHeader title="Categories" sub="Manage product categories. Categories are created automatically when you assign them to products." />
+
+      <Card title={`Active Categories (${categories.length})`}>
+        {isLoading ? (
+          <div className="flex items-center gap-2 text-text-muted text-[13px]"><Loader2 className="w-4 h-4 animate-spin" /> Loading...</div>
+        ) : categories.length === 0 ? (
+          <p className="text-[13px] text-text-muted">No categories yet. Add products with category slugs to see them here.</p>
+        ) : (
+          <div className="space-y-2">
+            {categories.map((cat) => (
+              <div key={cat.slug} className="flex items-center justify-between p-3 bg-secondary-bg rounded-[9px] border border-border-grey">
+                <div>
+                  <p className="font-semibold text-deep-blue text-[14px]">{cat.label || cat.slug}</p>
+                  <p className="text-[11px] text-text-muted font-mono">slug: {cat.slug}</p>
+                </div>
+                <span className="text-[11px] font-semibold px-2 py-0.5 bg-deep-blue/10 text-deep-blue rounded-full">{cat.count} products</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      <Card title="Add New Category">
+        <p className="text-[12px] text-text-muted mb-4">
+          To add a new category, enter a slug (URL-friendly ID) and a display label. Then assign this slug to products in the Products pane.
+          The category will automatically appear in the catalog filter tabs.
+        </p>
+        <div className="grid md:grid-cols-2 gap-4 mb-4">
+          <Field label="Slug (URL ID)" hint="Lowercase letters and hyphens only, e.g. 'kurta-sets'">
+            <input
+              className={inputCls}
+              value={newSlug}
+              placeholder="kurta-sets"
+              onChange={e => setNewSlug(e.target.value)}
+            />
+          </Field>
+          <Field label="Display Label" hint="Shown in filter tabs and product cards">
+            <input
+              className={inputCls}
+              value={newLabel}
+              placeholder="Kurta Sets"
+              onChange={e => setNewLabel(e.target.value)}
+            />
+          </Field>
+        </div>
+        <button
+          onClick={handleAdd}
+          className="flex items-center gap-1.5 px-5 py-2 rounded-[9px] bg-deep-blue text-white text-[12px] font-bold uppercase tracking-wider hover:opacity-90"
+        >
+          <Plus className="w-3.5 h-3.5" /> Preview Category
+        </button>
+        {info && (
+          <p className="mt-3 text-[12px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-3">{info}</p>
+        )}
+      </Card>
+
+      <Card title="How Categories Work">
+        <div className="space-y-2 text-[13px] text-text-muted leading-relaxed">
+          <p>📦 Categories are stored on each product, not separately. This means:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>To <strong>create</strong> a category: Add a product with the new category slug.</li>
+            <li>To <strong>rename</strong> a category: Edit all products in that category and update their <em>categoryLabel</em>.</li>
+            <li>To <strong>delete</strong> a category: Delete or reassign all products in it.</li>
+            <li>Categories appear in the catalog filter tabs automatically once a product uses them.</li>
+          </ul>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 /* ----- Products — live MongoDB CRUD ----- */
-const CATS = ["everyday", "festive", "floral", "minimal"] as const;
-const CAT_LABELS: Record<string, string> = {
-  everyday: "Everyday Wear", festive: "Festive", floral: "Floral Prints", minimal: "Minimal",
+// Note: CATS fallback — if DB returns no categories yet, show these defaults.
+const DEFAULT_CATS = ["kurti", "peplum-tops", "short-kurti", "maxi", "co-ord-set"];
+const DEFAULT_CAT_LABELS: Record<string, string> = {
+  kurti: "Kurti",
+  "peplum-tops": "Peplum Tops",
+  "short-kurti": "Short Kurti",
+  maxi: "Maxi",
+  "co-ord-set": "Co-ord Set",
 };
 
 type EditProduct = Partial<Product> & { _id?: string };
@@ -542,7 +639,8 @@ const normaliseHex = (s: string) => {
 
 type ProductFormData = {
   name: string; slug: string; description: string; subtitle: string;
-  category: typeof CATS[number]; categoryLabel: string;
+  category: string;         // Now a plain string — dynamic from DB
+  categoryLabel: string;
   price: string; oldPrice: string; stock: string;
   rating: number; ratingCount: number;
   badge: "new" | "sale" | "";
@@ -563,14 +661,20 @@ function ProductModal({ initial, onClose, onSave }: {
   const { mutate: update, isPending: updating  } = useUpdateProduct();
   const { upload, uploading } = useImageUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { data: catData } = useCategories();
+  const dbCats = catData?.data ?? [];
+  // Merge DB cats with defaults so the form is never empty
+  const allCats = dbCats.length > 0
+    ? dbCats.map(c => ({ slug: c.slug, label: c.label || c.slug }))
+    : DEFAULT_CATS.map(s => ({ slug: s, label: DEFAULT_CAT_LABELS[s] }));
 
   const [form, setForm] = useState<ProductFormData>({
     name:           initial?.name          ?? "",
     slug:           initial?.slug          ?? "",
     description:    initial?.description   ?? "",
     subtitle:       initial?.subtitle      ?? "",
-    category:       (initial?.category as typeof CATS[number]) ?? "everyday",
-    categoryLabel:  initial?.categoryLabel ?? "Everyday Wear",
+    category:       initial?.category ?? "kurti",
+    categoryLabel:  initial?.categoryLabel ?? "Kurti",
     price:          initial?.price != null ? String(initial.price) : "",
     oldPrice:       initial?.oldPrice != null ? String(initial.oldPrice) : "",
     stock:          initial?.stock != null ? String(initial.stock) : "0",
@@ -585,10 +689,29 @@ function ProductModal({ initial, onClose, onSave }: {
   });
   const [colorError, setColorError] = useState("");
   const [uploadError, setUploadError] = useState("");
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+
+  useEffect(() => {
+    if (initial?.category) {
+      const isKnown = allCats.some(c => c.slug === initial.category);
+      if (!isKnown && allCats.length > 0) {
+        setIsCustomCategory(true);
+      }
+    }
+  }, [initial, allCats]);
 
   const set = (patch: Partial<ProductFormData>) => setForm(f => ({ ...f, ...patch }));
 
-  const setCat = (cat: typeof CATS[number]) => set({ category: cat, categoryLabel: CAT_LABELS[cat] });
+  const setCat = (slug: string) => {
+    if (slug === "__custom__") {
+      setIsCustomCategory(true);
+      set({ category: "", categoryLabel: "" });
+    } else {
+      setIsCustomCategory(false);
+      const found = allCats.find(c => c.slug === slug);
+      set({ category: slug, categoryLabel: found?.label || slug });
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -736,10 +859,34 @@ function ProductModal({ initial, onClose, onSave }: {
               <input className={inputCls} value={form.subtitle} onChange={e => set({ subtitle: e.target.value })} placeholder="Summer Edition 2026" />
             </Field>
             <Field label="Category">
-              <select className={inputCls} value={form.category} onChange={e => setCat(e.target.value as typeof CATS[number])}>
-                {CATS.map(c => <option key={c} value={c}>{CAT_LABELS[c]}</option>)}
+              <select className={inputCls} value={isCustomCategory ? "__custom__" : form.category} onChange={e => setCat(e.target.value)}>
+                {allCats.map(c => <option key={c.slug} value={c.slug}>{c.label}</option>)}
+                <option value="__custom__">+ Add Custom/New Category...</option>
               </select>
             </Field>
+            {isCustomCategory && (
+              <>
+                <Field label="Custom Category Slug" hint="Lowercase and hyphens only, e.g. 'kurta-sets'">
+                  <input
+                    className={inputCls}
+                    value={form.category}
+                    onChange={e => {
+                      const slug = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+                      set({ category: slug });
+                    }}
+                    placeholder="e.g. kurta-sets"
+                  />
+                </Field>
+                <Field label="Custom Category Display Label" hint="e.g. 'Kurta Sets'">
+                  <input
+                    className={inputCls}
+                    value={form.categoryLabel}
+                    onChange={e => set({ categoryLabel: e.target.value })}
+                    placeholder="e.g. Kurta Sets"
+                  />
+                </Field>
+              </>
+            )}
             <Field label="Price (₹)">
               <input type="number" className={inputCls} value={form.price} onChange={e => set({ price: e.target.value })} />
             </Field>

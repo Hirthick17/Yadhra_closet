@@ -121,7 +121,7 @@ function ProductDetail() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur rounded-full px-4 py-2.5 text-[12px] flex items-center gap-2 text-accent-blue">
-                <Truck className="w-4 h-4 text-deep-blue" /> Free delivery · Price includes GST & all taxes
+                <Truck className="w-4 h-4 text-deep-blue" /> Delivery charges will be included at checkout
               </div>
             </div>
           </div>
@@ -159,7 +159,7 @@ function ProductDetail() {
                 )}
               </div>
               <p className="text-[12px] text-success font-medium mt-2">
-                ✓ Inclusive of delivery, GST & all taxes
+                ✓ Exclusive of delivery
               </p>
             </div>
 

@@ -7,6 +7,7 @@ require('dotenv').config();
 const express      = require('express');
 const helmet       = require('helmet');
 const cors         = require('cors');
+const compression  = require('compression');
 const rateLimit    = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const connectDB    = require('./config/db');
@@ -69,6 +70,19 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: [],
   maxAge:         86400, // Cache preflight for 24 hours
+}));
+
+// ── 2a. Response compression — gzip/brotli ──────────────────────────────────
+// Reduces JSON payload size by ~70-80%. Applied after CORS so compressed
+// responses still get proper CORS headers.
+app.use(compression({
+  level: 6,           // Balanced speed vs compression ratio
+  threshold: 1024,    // Only compress responses > 1KB
+  filter: (req, res) => {
+    // Don't compress if client doesn't accept it
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  },
 }));
 
 // ── 3. Rate limiting — BEFORE body parsing to stop floods cheaply ────────────

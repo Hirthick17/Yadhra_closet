@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "@tanstack/react-router";
 
-const HeroSection = ({ hero }) => {
+interface HeroProps {
+  hero: {
+    eyebrow: string;
+    titleTop: string;
+    titleBottom: string;
+    body: string;
+    cta1: string;
+    cta2: string;
+  };
+}
+
+const HeroSection = ({ hero }: HeroProps) => {
   // State to trigger the movement to the left corner
   const [moveToLeft, setMoveToLeft] = useState(false);
 

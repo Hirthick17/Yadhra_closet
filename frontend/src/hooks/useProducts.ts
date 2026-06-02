@@ -2,7 +2,7 @@
 // One hook per operation — components don't know about fetch, cache, or URLs.
 // TanStack Query handles caching, deduplication, and background refresh.
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { apiFetch } from '../lib/api';
 
 // ── Types — match the MongoDB Product model exactly ───────────────────────
@@ -12,7 +12,7 @@ export interface Product {
   name:          string;
   subtitle?:     string;
   description:   string;
-  category:      'everyday' | 'festive' | 'floral' | 'minimal';
+  category:      string; // Dynamic — no longer restricted to a fixed enum
   categoryLabel: string;
   price:         number;
   oldPrice?:     number;
@@ -58,7 +58,10 @@ export function useProducts(params?: {
   return useQuery<ProductsResponse>({
     queryKey: ['products', params],
     queryFn:  () => apiFetch<ProductsResponse>(`/products?${qs.toString()}`),
-    staleTime: 60_000, // Fresh for 60 seconds — no refetch spam
+    staleTime:            5 * 60_000, // Fresh for 5 minutes — reduces DB hits on repeat visits
+    gcTime:              10 * 60_000, // Keep in memory cache for 10 minutes
+    placeholderData:     keepPreviousData, // Show previous data while loading new category filter
+    refetchOnWindowFocus: false,      // Don't re-fetch when user switches tabs back
   });
 }
 
@@ -67,8 +70,9 @@ export function useProduct(id: string) {
   return useQuery<SingleProductResponse>({
     queryKey: ['products', id],
     queryFn:  () => apiFetch<SingleProductResponse>(`/products/${id}`),
-    enabled:  !!id,
-    staleTime: 60_000,
+    enabled:              !!id,
+    staleTime:            60_000,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -78,7 +82,10 @@ export function useCreateProduct() {
   return useMutation({
     mutationFn: (data: Partial<Product>) =>
       apiFetch('/products', { method: 'POST', body: JSON.stringify(data) }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['products'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['products'] });
+      qc.invalidateQueries({ queryKey: ['categories'] });
+    },
   });
 }
 
@@ -91,6 +98,7 @@ export function useUpdateProduct() {
     onSuccess: (_res, vars) => {
       qc.invalidateQueries({ queryKey: ['products'] });
       qc.invalidateQueries({ queryKey: ['products', vars.id] });
+      qc.invalidateQueries({ queryKey: ['categories'] });
     },
   });
 }
@@ -101,6 +109,31 @@ export function useDeleteProduct() {
   return useMutation({
     mutationFn: (id: string) =>
       apiFetch(`/products/${id}`, { method: 'DELETE' }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['products'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['products'] });
+      qc.invalidateQueries({ queryKey: ['categories'] });
+    },
+  });
+}
+
+// ── List distinct categories from DB ─────────────────────────────────────
+export interface Category {
+  slug:  string;
+  label: string;
+  count: number;
+}
+
+export interface CategoriesResponse {
+  success: boolean;
+  data:    Category[];
+}
+
+export function useCategories() {
+  return useQuery<CategoriesResponse>({
+    queryKey: ['categories'],
+    queryFn:  () => apiFetch<CategoriesResponse>('/products/categories'),
+    staleTime:            5 * 60_000,
+    gcTime:              15 * 60_000,
+    refetchOnWindowFocus: false,
   });
 }

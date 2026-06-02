@@ -6,11 +6,13 @@ import { Instagram, Facebook, Youtube, Lock } from "lucide-react";
 import { useCms } from "@/lib/cms";
 
 // Authoritative link destination table (per agent orchestration document T-03)
-const LINK_MAP: Record<string, string | { href: string }> = {
+const LINK_MAP: Record<string, any> = {
   "New Arrivals":       "/#hot",
-  "Everyday Wear":      "/catalog",
-  "Festive Collection": "/catalog",
-  "Hot Sales":          "/#hot",
+  "Kurti":              { to: "/catalog", search: { cat: "kurti" } },
+  "Peplum Tops":        { to: "/catalog", search: { cat: "peplum-tops" } },
+  "Short Kurti":        { to: "/catalog", search: { cat: "short-kurti" } },
+  "Maxi":               { to: "/catalog", search: { cat: "maxi" } },
+  "Co-ord Set":         { to: "/catalog", search: { cat: "co-ord-set" } },
   "FAQ":                "/faq",
   "Returns":            "/returns",
   "Our Story":          "/#brand",
@@ -30,6 +32,9 @@ function FooterLink({ label }: { label: string }) {
     // Anchor on homepage — use plain <a> so browser navigates to / then scrolls
     return <a href={dest} className={cls}>{label}</a>;
   }
+  if (typeof dest === "object") {
+    return <Link to={dest.to} search={dest.search} className={cls}>{label}</Link>;
+  }
   return <Link to={dest as string} className={cls}>{label}</Link>;
 }
 
@@ -40,7 +45,7 @@ function FooterLink({ label }: { label: string }) {
 const FOOTER_COLUMNS = [
   {
     title: "Shop",
-    links: ["New Arrivals", "Everyday Wear", "Festive Collection", "Hot Sales"],
+    links: ["New Arrivals", "Kurti", "Peplum Tops", "Short Kurti", "Maxi", "Co-ord Set"],
   },
   {
     title: "Help",

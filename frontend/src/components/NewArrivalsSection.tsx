@@ -2,7 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from "@tanstack/react-router";
 import { ShoppingBag } from 'lucide-react';
 
-const NewArrivalsSection = ({ sections, newArrivals, cartStore }) => {
+import { Product } from '../hooks/useProducts';
+
+interface NewArrivalsSectionProps {
+  sections: any;
+  newArrivals: Product[];
+  cartStore: any;
+}
+
+const NewArrivalsSection = ({ sections, newArrivals, cartStore }: NewArrivalsSectionProps) => {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -73,7 +81,7 @@ const NewArrivalsSection = ({ sections, newArrivals, cartStore }) => {
                 animationFillMode: 'forwards'
               }}
             >
-              <Link to={`/product/${p.slug || p._id}`}>
+              <Link to="/product/$id" params={{ id: p.slug || p._id }}>
                 <div className="rounded-[24px] overflow-hidden bg-white aspect-[3/4] shadow-sm group-hover:shadow-xl transition-all duration-500 relative">
                   <img 
                     src={p.images?.[0] || p.image || ''} 

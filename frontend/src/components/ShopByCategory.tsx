@@ -1,7 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from "@tanstack/react-router";
 
-const ShopByCategory = ({ CATEGORIES }) => {
+interface CategoryItem {
+  id: string;
+  name: string;
+  count: number;
+  badge?: string;
+  img: any; // Can be string or imported asset object
+  wide?: boolean;
+}
+
+interface ShopByCategoryProps {
+  CATEGORIES: CategoryItem[];
+}
+
+const ShopByCategory = ({ CATEGORIES }: ShopByCategoryProps) => {
   // We use a ref to target the section and state to track its visibility
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);

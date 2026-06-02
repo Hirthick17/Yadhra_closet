@@ -1,4 +1,4 @@
-// T-03: Return Policy page — stub so /returns route resolves (no 404 on footer click)
+// Return Policy page — All sales are final, no returns or exchanges
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/SiteShell";
 
@@ -14,55 +14,61 @@ function ReturnsPage() {
         <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-text-muted mb-3">
           Customer Care
         </p>
-        <h1 className="font-serif text-[clamp(32px,5vw,52px)] leading-tight text-deep-blue mb-10">
+        <h1 className="font-serif text-[clamp(32px,5vw,52px)] leading-tight text-deep-blue mb-6">
           Return Policy
         </h1>
 
+        {/* Prominent no-return banner */}
+        <div className="mb-10 p-5 rounded-2xl bg-amber-50 border-2 border-amber-300 flex gap-4 items-start">
+          <span className="text-2xl mt-0.5">⚠️</span>
+          <div>
+            <p className="font-bold text-amber-900 text-[16px]">No Returns or Exchanges</p>
+            <p className="text-amber-800 text-[13px] mt-1 leading-relaxed">
+              All sales at Yadhra Closet are final. We do not accept returns or exchanges
+              under any circumstances. Please read the full policy below.
+            </p>
+          </div>
+        </div>
+
         <div className="space-y-8 text-[14px] leading-[1.9] text-text-muted">
           <section>
-            <h2 className="font-serif text-xl text-deep-blue mb-3">7-Day Easy Returns</h2>
+            <h2 className="font-serif text-xl text-deep-blue mb-3">All Sales Are Final</h2>
             <p>
-              Not happy with your purchase? We offer hassle-free returns within 7 days of
-              delivery on all unworn items with original tags attached. Simply message us on
-              WhatsApp and we will arrange a free pickup.
+              We appreciate your trust in Yadhra Closet. Please note that{" "}
+              <strong className="text-deep-blue">we do not accept returns or exchanges</strong>{" "}
+              on any orders once they have been placed and confirmed. All purchases are considered
+              final at the time of order.
             </p>
           </section>
 
           <section>
-            <h2 className="font-serif text-xl text-deep-blue mb-3">Eligible Items</h2>
+            <h2 className="font-serif text-xl text-deep-blue mb-3">No Returns or Exchanges</h2>
             <ul className="list-disc pl-5 space-y-2">
-              <li>Item must be unworn, unwashed, and in original condition.</li>
-              <li>All original tags must be attached.</li>
-              <li>Items must be returned in their original packaging where possible.</li>
-              <li>Sale items are final sale and not eligible for returns.</li>
+              <li>We do not offer returns for any reason, including change of mind.</li>
+              <li>We do not offer size or colour exchanges after an order is confirmed.</li>
+              <li>Customised or made-to-order items cannot be returned or cancelled.</li>
+              <li>Sale items are final sale and are strictly non-returnable.</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="font-serif text-xl text-deep-blue mb-3">Refund Process</h2>
+            <h2 className="font-serif text-xl text-deep-blue mb-3">Please Shop Carefully</h2>
             <p>
-              Once we receive and inspect your return, we will process your refund within 3–5
-              business days. Refunds are issued to the original payment method or as store
-              credit — your choice.
+              We strongly encourage you to review product descriptions, size guides, and images
+              carefully before placing your order. If you have any questions about a product,
+              please contact us on WhatsApp before purchasing — we are happy to help you make
+              the right choice.
             </p>
           </section>
 
           <section>
-            <h2 className="font-serif text-xl text-deep-blue mb-3">Exchanges</h2>
+            <h2 className="font-serif text-xl text-deep-blue mb-3">Damaged or Wrong Items</h2>
             <p>
-              Want a different size or colour? We are happy to exchange your item. Message us
-              on WhatsApp with your order details and we will sort it out personally.
+              In the rare event that you receive a damaged item or an incorrect product, please
+              contact us within 24 hours of delivery with clear photos of the item and
+              packaging. We will assess each case individually and work towards a fair
+              resolution.
             </p>
-          </section>
-
-          <section>
-            <h2 className="font-serif text-xl text-deep-blue mb-3">How to Initiate a Return</h2>
-            <ol className="list-decimal pl-5 space-y-2">
-              <li>Message us on WhatsApp with your order number and reason for return.</li>
-              <li>We'll confirm eligibility and send you a pickup slot.</li>
-              <li>Pack the item securely and hand it to our delivery partner.</li>
-              <li>Refund or exchange processed within 3–5 days of receipt.</li>
-            </ol>
           </section>
 
           <section>

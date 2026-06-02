@@ -10,7 +10,9 @@ const ALLOWED_PRODUCT_FIELDS = new Set([
   'images','image','colors','sizes','outOfStockSizes','isActive',
 ]);
 
-const VALID_CATEGORIES = new Set(['everyday','festive','floral','minimal']);
+// Category is now a dynamic slug — validated as a non-empty lowercase-hyphen string
+// Admin creates categories dynamically; no hardcoded enum here.
+const CATEGORY_SLUG_RE = /^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$/;
 
 exports.validateProduct = (req, res, next) => {
   const { name, price, category, description } = req.body;
@@ -22,9 +24,8 @@ exports.validateProduct = (req, res, next) => {
   if (price === undefined || typeof price !== 'number' || price < 0 || price > 1_000_000)
     errors.push('price must be a non-negative number below 10,00,000');
 
-  if (!category || !VALID_CATEGORIES.has(category))
-    errors.push(`category must be one of: ${[...VALID_CATEGORIES].join(', ')}`);
-
+  if (!category || typeof category !== 'string' || !CATEGORY_SLUG_RE.test(category))
+    errors.push('category must be a non-empty slug (lowercase letters, numbers, hyphens) e.g. everyday, kurta-sets');
   if (!description || description.trim().length < 10)
     errors.push('description must be at least 10 characters');
 

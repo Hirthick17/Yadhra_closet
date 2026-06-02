@@ -1,17 +1,18 @@
 // src/routes/catalog.tsx
 // Products now fetched from MongoDB via useProducts hook.
 // Filter tabs, search, loading skeletons, and error state all included.
+// Categories are fetched dynamically — no hardcoded lists.
 
 import { createFileRoute, useSearch, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/SiteShell";
 import { useState, useEffect } from "react";
 import { z } from "zod";
-import { useProducts } from "@/hooks/useProducts";
+import { useProducts, useCategories } from "@/hooks/useProducts";
 import { cartStore } from "@/lib/cart";
 import { ShoppingBag } from "lucide-react";
 
 const searchSchema = z.object({
-  cat: z.enum(["all", "everyday", "festive", "floral", "minimal"]).optional(),
+  cat: z.string().optional(), // Now accepts any category slug — dynamic from DB
 });
 
 export const Route = createFileRoute("/catalog")({
@@ -19,14 +20,6 @@ export const Route = createFileRoute("/catalog")({
   validateSearch: searchSchema,
   head: () => ({ meta: [{ title: "All Kurtis — Yadhra Closet" }] }),
 });
-
-const FILTERS = [
-  { id: "all",      label: "All" },
-  { id: "everyday", label: "Everyday Wear" },
-  { id: "festive",  label: "Festive" },
-  { id: "floral",   label: "Floral Prints" },
-  { id: "minimal",  label: "Minimal" },
-] as const;
 
 // ── Loading skeleton ─────────────────────────────────────────────────────
 function ProductSkeleton() {
@@ -48,6 +41,15 @@ function Catalog() {
   const [active, setActive] = useState<string>(search.cat ?? "all");
   useEffect(() => { if (search.cat) setActive(search.cat); }, [search.cat]);
 
+  const { data: catData } = useCategories();
+  const dbCategories = catData?.data ?? [];
+
+  // Build filter tabs: "All" first, then categories from DB
+  const filters = [
+    { id: "all", label: "All" },
+    ...dbCategories.map(c => ({ id: c.slug, label: c.label || c.slug })),
+  ];
+
   const category = active === "all" ? undefined : active;
   const { data, isLoading, isError, error } = useProducts({ category });
   const products = data?.data ?? [];
@@ -66,7 +68,7 @@ function Catalog() {
       {/* Filter tabs */}
       <section className="max-w-[1400px] mx-auto px-5 md:px-10 pb-6">
         <div className="flex flex-wrap gap-2">
-          {FILTERS.map((f) => (
+          {filters.map((f) => (
             <button
               key={f.id}
               onClick={() => setActive(f.id)}
@@ -79,6 +81,7 @@ function Catalog() {
               {f.label}
             </button>
           ))}
+
         </div>
       </section>
 
@@ -99,15 +102,16 @@ function Catalog() {
 
         {!isLoading && !isError && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {products.map((p) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {products.map((p, index) => (
                 <div key={p._id} className="group relative">
                   <Link to="/product/$id" params={{ id: p.slug || p._id }}>
                     <div className="relative rounded-[18px] overflow-hidden bg-secondary-bg aspect-[3/4]">
                       <img
                         src={p.images?.[0] || p.image || "/images/placeholder.jpg"}
                         alt={p.name}
-                        loading="lazy"
+                        loading={index < 4 ? "eager" : "lazy"}
+                        fetchPriority={index < 4 ? "high" : "auto"}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       {p.badge && (

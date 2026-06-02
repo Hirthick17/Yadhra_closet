@@ -11,7 +11,7 @@ export type Product = {
   id: string;
   name: string;
   subtitle?: string;
-  category: "everyday" | "festive" | "floral" | "minimal";
+  category: string;
   categoryLabel: string;
   price: number;
   oldPrice?: number;
@@ -28,8 +28,8 @@ export const PRODUCTS: Product[] = [
     id: "blossom-linen",
     name: "Blossom Linen Kurti",
     subtitle: "Summer Edition 2026",
-    category: "everyday",
-    categoryLabel: "Everyday Wear",
+    category: "kurti",
+    categoryLabel: "Kurti",
     price: 699,
     oldPrice: 999,
     rating: 4.9,
@@ -42,8 +42,8 @@ export const PRODUCTS: Product[] = [
   {
     id: "indigo-embroidered",
     name: "Indigo Embroidered Kurta",
-    category: "festive",
-    categoryLabel: "Festive",
+    category: "short-kurti",
+    categoryLabel: "Short Kurti",
     price: 1099,
     oldPrice: 1499,
     rating: 4.7,
@@ -55,8 +55,8 @@ export const PRODUCTS: Product[] = [
   {
     id: "sage-garden",
     name: "Sage Garden Kurti",
-    category: "floral",
-    categoryLabel: "Floral Prints",
+    category: "peplum-tops",
+    categoryLabel: "Peplum Tops",
     price: 849,
     rating: 4.8,
     ratingCount: 73,
@@ -66,8 +66,8 @@ export const PRODUCTS: Product[] = [
   {
     id: "golden-thread",
     name: "Golden Thread Kurti",
-    category: "festive",
-    categoryLabel: "Festive",
+    category: "maxi",
+    categoryLabel: "Maxi",
     price: 1299,
     oldPrice: 1799,
     rating: 4.6,
@@ -79,8 +79,8 @@ export const PRODUCTS: Product[] = [
   {
     id: "clay-cotton",
     name: "Clay Cotton Kurti",
-    category: "minimal",
-    categoryLabel: "Minimal",
+    category: "kurti",
+    categoryLabel: "Kurti",
     price: 599,
     rating: 4.8,
     ratingCount: 91,
@@ -90,8 +90,8 @@ export const PRODUCTS: Product[] = [
   {
     id: "coral-silk",
     name: "Coral Silk Kurti",
-    category: "festive",
-    categoryLabel: "Festive",
+    category: "co-ord-set",
+    categoryLabel: "Co-ord Set",
     price: 1499,
     oldPrice: 1999,
     rating: 4.7,
@@ -103,10 +103,12 @@ export const PRODUCTS: Product[] = [
 ];
 
 // --- Tiny store ---
+// Flat delivery charge — no variable/fast option
+export const DELIVERY_CHARGE = 60;
+
 type State = {
   cartCount: number;
   currentStep: 1 | 2 | 3 | 4;
-  deliveryExtra: 0 | 150;
   refApplied: boolean;
   socialApplied: boolean;
 };
@@ -114,7 +116,6 @@ type State = {
 let state: State = {
   cartCount: 0,
   currentStep: 1,
-  deliveryExtra: 0,
   refApplied: false,
   socialApplied: false,
 };
@@ -146,9 +147,9 @@ export const ITEM_SUBTOTAL = 1798; // PRD: items total 1798
 
 export function calcTotals() {
   const s = store.get();
-  const base = ITEM_SUBTOTAL + s.deliveryExtra;
+  const base = ITEM_SUBTOTAL + DELIVERY_CHARGE;
   const refDisc = s.refApplied ? Math.floor(ITEM_SUBTOTAL * 0.05) : 0;
   const socDisc = s.socialApplied ? Math.floor(ITEM_SUBTOTAL * 0.05) : 0;
   const disc = refDisc + socDisc;
-  return { items: ITEM_SUBTOTAL, delivery: s.deliveryExtra, disc, total: base - disc };
+  return { items: ITEM_SUBTOTAL, delivery: DELIVERY_CHARGE, disc, total: base - disc };
 }

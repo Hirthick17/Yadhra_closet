@@ -5,10 +5,10 @@
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { SiteShell } from "@/components/SiteShell";
-import { store, useStore } from "@/lib/store";
+import { store, useStore, DELIVERY_CHARGE } from "@/lib/store";
 import { useCart, cartStore } from "@/lib/cart";
 import { useState } from "react";
-import { Check, Zap, Truck, Instagram, Facebook, Minus, Plus, X } from "lucide-react";
+import { Check, Truck, Instagram, Facebook, Minus, Plus, X } from "lucide-react";
 import { usePlaceOrder } from "@/hooks/useOrders";
 import { buildWhatsAppURL } from "@/lib/whatsapp";
 
@@ -243,12 +243,6 @@ function Step2({
   onNext: () => void; onBack: () => void;
   address: AddressState; setAddress: React.Dispatch<React.SetStateAction<AddressState>>;
 }) {
-  const delivery = useStore((s) => s.deliveryExtra);
-  const opts = [
-    { id: 0,   title: "Standard", sub: "4–6 days · Free",    icon: Truck },
-    { id: 150, title: "Fast",     sub: "1–2 days · +₹150",   icon: Zap },
-  ] as const;
-
   const handleNext = () => {
     if (!address.firstName || !address.lastName || !address.phone || !address.line1 || !address.city || !address.pincode) {
       alert("Please fill in all mandatory fields (First Name, Last Name, Phone, Address Line 1, City, Pincode).");
@@ -275,31 +269,16 @@ function Step2({
         <Field label="Pincode" placeholder="600001"  value={address.pincode} onChange={set('pincode')} />
       </div>
 
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-text-muted mt-7">Delivery Speed</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-        {opts.map((o) => {
-          const active = delivery === o.id;
-          const Icon = o.icon;
-          return (
-            <button
-              key={o.id}
-              onClick={() => store.set({ deliveryExtra: o.id })}
-              className={`text-left p-4 rounded-2xl border-2 transition flex items-center gap-4 ${
-                active ? "border-deep-blue bg-deep-blue/5" : "border-border-grey bg-white hover:border-deep-blue/40"
-              }`}
-            >
-              <Icon className={`w-5 h-5 ${active ? "text-deep-blue" : "text-text-muted"}`} />
-              <div className="flex-1">
-                <p className="font-semibold text-[14px]">{o.title}</p>
-                <p className="text-[12px] text-text-muted">{o.sub}</p>
-              </div>
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition ${active ? "border-deep-blue" : "border-border-grey"}`}>
-                {active && <div className="w-2.5 h-2.5 rounded-full bg-deep-blue" />}
-              </div>
-            </button>
-          );
-        })}
+      {/* Fixed delivery info */}
+      <div className="mt-7 p-4 rounded-2xl border border-border-grey flex items-center gap-4 bg-secondary-bg">
+        <Truck className="w-5 h-5 text-deep-blue flex-shrink-0" />
+        <div className="flex-1">
+          <p className="font-semibold text-[14px] text-deep-blue">Standard Delivery</p>
+          <p className="text-[12px] text-text-muted">4–6 business days · ₹60 delivery charge</p>
+        </div>
+        <span className="font-mono font-semibold text-deep-blue">₹60</span>
       </div>
+
       <NavBtns onBack={onBack} onNext={handleNext} />
     </Panel>
   );
@@ -369,7 +348,6 @@ function Step3({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
 function Step4({ onBack, address }: { onBack: () => void; address: AddressState }) {
   const refApplied    = useStore((s) => s.refApplied);
   const socialApplied = useStore((s) => s.socialApplied);
-  const delivery      = useStore((s) => s.deliveryExtra);
   const { items, subtotal } = useCart();
   const { mutate: placeOrder, isPending } = usePlaceOrder();
   const navigate = useNavigate();
@@ -377,7 +355,7 @@ function Step4({ onBack, address }: { onBack: () => void; address: AddressState 
 
   const discPct = (refApplied ? 0.05 : 0) + (socialApplied ? 0.05 : 0);
   const disc    = Math.floor(subtotal * discPct);
-  const total   = subtotal + delivery - disc;
+  const total   = subtotal + DELIVERY_CHARGE - disc;
 
   const discLabel = [refApplied && "Referral 5%", socialApplied && "Social 5%"]
     .filter(Boolean).join(" + ");
@@ -438,7 +416,7 @@ function Step4({ onBack, address }: { onBack: () => void; address: AddressState 
       {/* Order summary */}
       <div className="bg-secondary-bg rounded-2xl p-5 space-y-2.5 text-[14px]">
         <Row label="Items"    value={`₹${subtotal.toLocaleString("en-IN")}`} />
-        <Row label="Delivery" value={delivery === 0 ? "Free" : `+₹${delivery}`} />
+        <Row label="Delivery Charge" value={`₹${DELIVERY_CHARGE}`} />
         {disc > 0 && <Row label={`Discount (${discLabel})`} value={`−₹${disc}`} valueClass="text-success" />}
         <div className="border-t border-border-grey pt-3 flex justify-between items-baseline">
           <span className="text-[13px] uppercase tracking-wider font-semibold text-text-muted">Total</span>
@@ -446,8 +424,19 @@ function Step4({ onBack, address }: { onBack: () => void; address: AddressState 
         </div>
       </div>
 
+      {/* No-return policy notice */}
+      <div className="mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4">
+        <p className="text-[13px] text-amber-800 font-semibold leading-relaxed">
+          ⚠️ No Returns or Exchanges
+          <span className="block mt-1 text-[12px] text-amber-700 font-normal">
+            All sales are final. We do not accept returns or exchanges once an order is placed.
+            Please review your order carefully before confirming.
+          </span>
+        </p>
+      </div>
+
       {/* WhatsApp info banner */}
-      <div className="mt-5 bg-emerald-50 border border-emerald-200 rounded-2xl p-4">
+      <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-2xl p-4">
         <p className="text-[13px] text-emerald-800 font-medium leading-relaxed">
           💬 Your order will be sent to our WhatsApp. We will confirm and share payment details within a few minutes.
           <span className="block mt-1 text-[12px] text-emerald-600 font-normal">Cash on delivery · Bank transfer · As agreed with seller</span>

@@ -1,7 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from "@tanstack/react-router";
 
-const HighlyRatedSection = ({ sections, highlyRated }) => {
+import { Product } from '../hooks/useProducts';
+
+interface HighlyRatedSectionProps {
+  sections: any;
+  highlyRated: Product[];
+}
+
+const HighlyRatedSection = ({ sections, highlyRated }: HighlyRatedSectionProps) => {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -53,7 +60,8 @@ const HighlyRatedSection = ({ sections, highlyRated }) => {
           {highlyRated.map((p, index) => (
             <Link 
               key={p._id}
-              to={`/product/${p.slug || p._id}`}
+              to="/product/$id"
+              params={{ id: p.slug || p._id }}
               className={`group flex flex-col rounded-[24px] bg-white/5 border border-white/10 overflow-hidden hover:bg-white/10 hover:border-white/20 hover:-translate-y-2 transition-all duration-500 shadow-sm hover:shadow-2xl hover:shadow-black/50 ${
                 isVisible ? 'opacity-0 animate-fade-up' : 'opacity-0'
               }`}

@@ -64,7 +64,7 @@ const DEFAULT: CmsContent = {
   footer: {
     tagline: "Editorial kurtis for the modern Indian woman. Made with love in Chennai.",
     columns: [
-      { title: "Shop",  links: ["New Arrivals", "Everyday Wear", "Festive Collection", "Hot Sales"] },
+      { title: "Shop",  links: ["New Arrivals", "Kurti", "Peplum Tops", "Short Kurti", "Maxi", "Co-ord Set"] },
       { title: "Help",  links: ["FAQ", "Returns"] },
       { title: "About", links: ["Our Story", "Contact"] },
     ],
@@ -102,8 +102,8 @@ const DEFAULT: CmsContent = {
   faq: {
     title: "Frequently Asked Questions",
     items: [
-      { q: "What is your return policy?", a: "Easy 7-day returns on all unworn items with original tags. Reach out via WhatsApp or email and we'll arrange a free pickup." },
-      { q: "How long does delivery take?", a: "Standard delivery is 4–6 business days across India. Choose Fast Delivery at checkout for 1–2 day shipping (+₹150)." },
+      { q: "What is your return policy?", a: "All sales at Yadhra Closet are final. We do not accept returns or exchanges. In case you receive a damaged or wrong item, please contact us on WhatsApp within 24 hours of delivery." },
+      { q: "How long does delivery take?", a: "Delivery is a flat ₹60 charge on all orders. Standard delivery is 4–6 business days across India." },
       { q: "Do you have a size guide?", a: "Yes — every product page includes detailed measurements. When in doubt, size up; our cuts are designed for ease of movement." },
       { q: "Do you ship internationally?", a: "Currently we ship within India only. International shipping is on the roadmap for late 2026." },
       { q: "How do I care for my kurti?", a: "We recommend a gentle cold-water hand wash and air drying in shade. Iron on low heat. Avoid harsh detergents to preserve color and fabric." },
@@ -112,7 +112,7 @@ const DEFAULT: CmsContent = {
   products: SEED_PRODUCTS,
 };
 
-const KEY_CONTENT = "yc_cms_content_v2";  // bumped v1→v2: footer columns updated (T-02)
+const KEY_CONTENT = "yc_cms_content_v3";  // bumped v2→v3: new categories + return policy + delivery FAQ
 const KEY_AUTH = "yc_cms_auth_v1";
 
 function load(): CmsContent {

@@ -21,10 +21,11 @@ import ReviewsSection from "@/components/ReviewsSection";
 export const Route = createFileRoute("/")({ component: Home });
 
 const CATEGORIES = [
-  { id: "everyday", name: "Everyday Wear", count: 32, badge: "Most Popular", img: catEveryday, wide: true },
-  { id: "festive", name: "Festive", count: 18, badge: "🔥 Hot", img: catFestive },
-  { id: "floral", name: "Floral Prints", count: 24, img: catFloral },
-  { id: "minimal", name: "Minimal", count: 21, img: catMinimal },
+  { id: "kurti", name: "Kurti", count: 32, badge: "Most Popular", img: catEveryday, wide: true },
+  { id: "peplum-tops", name: "Peplum Tops", count: 18, badge: "🔥 Hot", img: catFloral },
+  { id: "short-kurti", name: "Short Kurti", count: 24, img: catMinimal },
+  { id: "maxi", name: "Maxi", count: 21, img: catFestive },
+  { id: "co-ord-set", name: "Co-ord Set", count: 15, img: festiveCollection },
 ];
 
 function Home() {
@@ -34,10 +35,12 @@ function Home() {
   const reviews  = useCms((s) => s.content.home.reviews);
 
   // ── Live data from MongoDB ─────────────────────────────────────────
-  const { data: newData }    = useProducts({ limit: 6 });
-  const { data: ratedData }  = useProducts({ limit: 4 });
-  const newArrivals  = newData?.data  ?? [];
-  const highlyRated  = ratedData?.data ?? [];
+  // Single query serves both sections (was 2 separate calls before).
+  // New Arrivals uses 6 products, Highly Rated uses 4 — both from the same fetch.
+  const { data: productsData } = useProducts({ limit: 8 });
+  const allProducts = productsData?.data ?? [];
+  const newArrivals  = allProducts.slice(0, 6);
+  const highlyRated  = allProducts.slice(0, 4);
 
   return (
     <SiteShell>
