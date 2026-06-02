@@ -5,8 +5,8 @@
   "framework": null,
   "rewrites": [
     {
-      "source": "/:path*",
-      "destination": "/_shell.html"
+      "source": "/(.*)",
+      "destination": "/"
     }
   ]
 }
