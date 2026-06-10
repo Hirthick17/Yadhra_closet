@@ -34,8 +34,10 @@ exports.validateProduct = (req, res, next) => {
   if (unknown.length > 0)
     errors.push(`Unknown fields rejected: ${unknown.join(', ')}`);
 
-  if (errors.length > 0)
+  if (errors.length > 0) {
+    console.error('Validation failed for product:', errors, 'Body:', req.body);
     return res.status(400).json({ success: false, message: errors.join('; ') });
+  }
 
   next();
 };

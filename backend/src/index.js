@@ -24,6 +24,10 @@ const { errorHandler } = require('./middleware/errorhanlder');
 const app    = express();
 const isProd = process.env.NODE_ENV === 'production';
 
+// Enable trusting reverse proxy headers (e.g. Render's load balancer)
+// to allow express-rate-limit to correctly resolve the client's IP.
+app.set('trust proxy', 1);
+
 // ── 1. Security headers — FIRST, before any response leaves the server ──────
 // helmet sets 11 headers: CSP, HSTS, X-Frame-Options, etc.
 app.use(helmet({

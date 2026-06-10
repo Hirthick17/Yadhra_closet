@@ -40,7 +40,7 @@ const productSchema = new mongoose.Schema({
 
   rating:      { type: Number, default: 0, min: 0, max: 5 },
   ratingCount: { type: Number, default: 0 },          // Matches 'ratingCount' in frontend
-  badge:       { type: String, enum: ['new', 'sale', null], default: null },
+  badge:       { type: String, enum: ['new', 'sale'], default: null, required: false },
 
   stock:    { type: Number, default: 0, min: 0 },
   isActive: { type: Boolean, default: true },         // Soft delete
