@@ -756,9 +756,25 @@ function ProductModal({ initial, onClose, onSave }: {
     };
 
     if (isEdit && initial?._id) {
-      update({ id: initial._id, data: payload }, { onSuccess: onSave });
+      update(
+        { id: initial._id, data: payload },
+        {
+          onSuccess: onSave,
+          onError: (err: any) => {
+            alert(`Failed to save product: ${err.message}`);
+          }
+        }
+      );
     } else {
-      create(payload, { onSuccess: onSave });
+      create(
+        payload,
+        {
+          onSuccess: onSave,
+          onError: (err: any) => {
+            alert(`Failed to create product: ${err.message}`);
+          }
+        }
+      );
     }
   };
 
